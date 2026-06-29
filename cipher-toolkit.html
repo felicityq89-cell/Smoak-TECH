@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>cipher-toolkit — quick encode/decode</title>
+<style>
+  :root{ --bg:#070b08; --panel:#0d140e; --line:#1c2c1f; --ink:#d7ffe2; --dim:#6f9a7d; --acc:#5eff8f; }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:ui-monospace,Consolas,monospace;background:var(--bg);color:var(--ink);padding:30px;max-width:780px;margin:auto}
+  h1{font-size:20px;letter-spacing:.06em;margin-bottom:4px}h1 b{color:var(--acc)}
+  p.sub{color:var(--dim);font-size:13px;margin-bottom:22px}
+  textarea{width:100%;height:120px;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    color:var(--ink);padding:14px;font:inherit;resize:vertical}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+  button{font:inherit;font-size:12.5px;color:#06120a;background:var(--acc);border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+  button.ghost{background:transparent;color:var(--acc);border:1px solid var(--line)}
+  label.rot{color:var(--dim);font-size:12px;display:inline-flex;align-items:center;gap:8px;margin-left:auto}
+  input[type=range]{accent-color:var(--acc)}
+  .out{margin-top:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-height:60px;white-space:pre-wrap;word-break:break-word}
+  footer{margin-top:24px;color:var(--dim);font-size:11px}
+</style>
+</head>
+<body>
+  <h1>cipher<b>-toolkit</b></h1>
+  <p class="sub">tiny client-side encoder. no network, no logging. — f.smoak</p>
+
+  <textarea id="in" placeholder="type or paste text…">The vault is only as strong as its weakest password.</textarea>
+
+  <div class="btns">
+    <button data-op="rot">Caesar shift</button>
+    <button data-op="rot13">ROT13</button>
+    <button data-op="b64e" class="ghost">Base64 →</button>
+    <button data-op="b64d" class="ghost">← Base64</button>
+    <button data-op="rev" class="ghost">Reverse</button>
+    <button data-op="up" class="ghost">A→Z=1..26</button>
+    <label class="rot">shift <input id="shift" type="range" min="1" max="25" value="3"><b id="sv">3</b></label>
+  </div>
+
+  <div class="out" id="out">—</div>
+  <footer>cipher-toolkit · MIT · v1.3.0</footer>
+
+<script>
+  const $=s=>document.querySelector(s);
+  const shift=$('#shift'), sv=$('#sv'); shift.oninput=()=>sv.textContent=shift.value;
+  function caesar(t,n){return t.replace(/[a-z]/gi,c=>{const b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+n+26)%26+b);});}
+  const ops={
+    rot:t=>caesar(t,+shift.value),
+    rot13:t=>caesar(t,13),
+    b64e:t=>{try{return btoa(unescape(encodeURIComponent(t)))}catch{return'(error)'}},
+    b64d:t=>{try{return decodeURIComponent(escape(atob(t.trim())))}catch{return'(invalid base64)'}},
+    rev:t=>[...t].reverse().join(''),
+    up:t=>t.toUpperCase().replace(/[A-Z]/g,c=>c.charCodeAt(0)-64+' ').trim()
+  };
+  document.querySelectorAll('button').forEach(b=>b.onclick=()=>{ $('#out').textContent = ops[b.dataset.op]($('#in').value) || '—'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Overwatch — Security Operations Dashboard</title>
+<style>
+  :root{ --bg:#070b08; --panel:#0d140e; --line:#1c2c1f; --ink:#d7ffe2; --dim:#6f9a7d; --acc:#5eff8f; }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:"SFMono-Regular",ui-monospace,Consolas,monospace;background:var(--bg);color:var(--ink);padding:28px;
+    background-image:radial-gradient(60% 50% at 80% 0%,rgba(94,255,143,.06),transparent 60%)}
+  header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+  h1{font-size:18px;letter-spacing:.18em}h1 b{color:var(--acc)}
+  .pill{font-size:11px;color:var(--acc);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card .k{font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+  .card .v{font-size:30px;color:var(--acc);margin-top:8px;font-weight:700}
+  .card .d{font-size:11px;color:var(--dim);margin-top:6px}
+  .feed{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;height:240px;overflow:auto}
+  .feed h2{font-size:12px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:12px}
+  .row{font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line);display:flex;gap:12px}
+  .row .t{color:var(--dim)}.row .ok{color:var(--acc)}.row .warn{color:#ffd166}.row .bad{color:#ff6b6b}
+  footer{margin-top:18px;font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+  <header>
+    <h1>OVER<b>WATCH</b> // SECURITY OPS</h1>
+    <span class="pill">● node: star-city-01 · authed as f.smoak</span>
+  </header>
+
+  <section class="grid">
+    <div class="card"><div class="k">Threats blocked (24h)</div><div class="v" id="t">14,229</div><div class="d">▲ 3.1% vs yesterday</div></div>
+    <div class="card"><div class="k">Uptime</div><div class="v">99.998%</div><div class="d">last incident 71 days ago</div></div>
+    <div class="card"><div class="k">Active sensors</div><div class="v">312</div><div class="d">4 in maintenance</div></div>
+    <div class="card"><div class="k">Open alerts</div><div class="v">2</div><div class="d">both low severity</div></div>
+  </section>
+
+  <section class="feed">
+    <h2>live event stream</h2>
+    <div id="log"></div>
+  </section>
+
+  <footer>overwatch v4.2.0 · © Palmer Technologies R&amp;D · build 20a7f3c</footer>
+
+<script>
+  const events = [
+    ["ok","handshake verified — gateway 10.0.4.12"],
+    ["warn","rate-limit triggered — 88.x.x.x (throttled)"],
+    ["ok","signature db updated → 1,204 new rules"],
+    ["bad","intrusion attempt blocked — port 22 brute force"],
+    ["ok","backup snapshot sealed (AES-256)"],
+    ["ok","cert rotated — *.palmertech.net"],
+    ["warn","anomalous login geo — flagged for review"],
+  ];
+  const log = document.getElementById('log'); let i=0;
+  function tick(){
+    const [cls,msg] = events[i % events.length];
+    const time = new Date().toLocaleTimeString();
+    const div = document.createElement('div');
+    div.className='row';
+    div.innerHTML = `<span class="t">${time}</span><span class="${cls}">[${cls.toUpperCase()}]</span><span>${msg}</span>`;
+    log.prepend(div); i++;
+    document.getElementById('t').textContent = (14229 + i).toLocaleString();
+  }
+  tick(); setInterval(tick, 2200);
+</script>
+</body>
+</html>

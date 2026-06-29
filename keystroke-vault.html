@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Keystroke Vault</title>
+<style>
+  :root{ --bg:#070b08; --panel:#0d140e; --line:#1c2c1f; --ink:#d7ffe2; --dim:#6f9a7d; --acc:#5eff8f; }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:30px;max-width:640px;margin:auto}
+  h1{font-size:20px}h1 b{color:var(--acc)}
+  p.sub{color:var(--dim);font-size:13px;margin:6px 0 22px}
+  .entry{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+  .entry .ic{width:34px;height:34px;border-radius:9px;background:#11201500;border:1px solid var(--line);display:grid;place-items:center;color:var(--acc);font-weight:700}
+  .entry .meta{flex:1}
+  .entry .site{font-weight:600;font-size:14px}.entry .user{color:var(--dim);font-size:12px}
+  .entry .pw{font-family:ui-monospace,monospace;color:var(--dim);letter-spacing:2px}
+  .entry button{font:inherit;font-size:12px;color:var(--acc);background:none;border:1px solid var(--line);border-radius:7px;padding:6px 10px;cursor:pointer}
+  .add{margin-top:16px;display:flex;gap:8px}
+  .add input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 12px}
+  .add button{background:var(--acc);color:#06120a;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:600}
+  footer{margin-top:22px;color:var(--dim);font-size:11px}
+</style>
+</head>
+<body>
+  <h1>Keystroke <b>Vault</b></h1>
+  <p class="sub">zero-knowledge password manager · everything encrypted locally with your master key</p>
+  <div id="list">
+    <div class="entry"><div class="ic">P</div><div class="meta"><div class="site">palmertech.net</div><div class="user">f.smoak@palmertech.net</div></div><span class="pw" data-pw="d0nt_h@ckThis!">••••••••••</span><button>reveal</button></div>
+    <div class="entry"><div class="ic">G</div><div class="meta"><div class="site">github.com</div><div class="user">felicity-q</div></div><span class="pw" data-pw="Gr33nArr0w22">••••••••••</span><button>reveal</button></div>
+    <div class="entry"><div class="ic">S</div><div class="meta"><div class="site">starcity-grid.gov</div><div class="user">overwatch_admin</div></div><span class="pw" data-pw="b3lievInH3r0es">••••••••••</span><button>reveal</button></div>
+    <div class="entry"><div class="ic">M</div><div class="meta"><div class="site">mail.proton.me</div><div class="user">felicitysmoak</div></div><span class="pw" data-pw="C0ffe3&Code">••••••••••</span><button>reveal</button></div>
+  </div>
+  <div class="add">
+    <input id="site" placeholder="site" /><input id="user" placeholder="username" />
+    <button id="addBtn">+ add</button>
+  </div>
+  <footer>keystroke-vault · AES-256-GCM · master key never leaves this device</footer>
+<script>
+  document.getElementById('list').addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON')return;
+    const span=e.target.previousElementSibling;
+    const shown=span.dataset.shown==='1';
+    span.textContent= shown ? '••••••••••' : span.dataset.pw;
+    span.dataset.shown= shown?'0':'1'; e.target.textContent= shown?'reveal':'hide';
+  });
+  document.getElementById('addBtn').onclick=()=>{
+    const s=site.value.trim(),u=user.value.trim(); if(!s)return;
+    const div=document.createElement('div'); div.className='entry';
+    div.innerHTML=`<div class="ic">${s[0].toUpperCase()}</div><div class="meta"><div class="site">${s}</div><div class="user">${u||'—'}</div></div><span class="pw" data-pw="auto-generated">••••••••••</span><button>reveal</button>`;
+    document.getElementById('list').appendChild(div); site.value=user.value='';
+  };
+</script>
+</body>
+</html>
